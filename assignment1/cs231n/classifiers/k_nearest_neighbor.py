@@ -52,7 +52,7 @@ class KNearestNeighbor(object):
   def compute_distances_two_loops(self, X):
     """
     Compute the distance between each test point in X and each training point
-    in self.X_train using a nested loop over both the training data and the 
+    in self.X_train using a nested loop over both the training data and the
     test data.
 
     Inputs:
@@ -125,7 +125,17 @@ class KNearestNeighbor(object):
     # HINT: Try to formulate the l2 distance using matrix multiplication    #
     #       and two broadcast sums.                                         #
     #########################################################################
-    pass
+    a_a = np.sum(np.square(X), axis=1)
+    b_b = np.sum(np.square(self.X_train), axis=1)
+    dists = (
+            a_a.reshape((X.shape[0], 1)) +
+            b_b +
+            (-2 * (X.dot(self.X_train.T)))
+    )
+    dists = np.sqrt(dists)
+
+
+
     #########################################################################
     #                         END OF YOUR CODE                              #
     #########################################################################
