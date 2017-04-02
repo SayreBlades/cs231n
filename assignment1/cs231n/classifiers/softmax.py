@@ -34,24 +34,28 @@ def softmax_loss_naive(W, X, y, reg):
   num_train = X.shape[0]
   loss = 0.0
   for i in xrange(num_train):
+    correct_class = y[i]
     scores = X[i].dot(W)
+    scores -= np.max(scores)
     exp = np.exp(scores)
     exp_sum = exp.sum()
-    norm = exp / exp_sum
-    correct_class_score = norm[y[i]]
-    loss += -np.log(correct_class_score)
+    norm_p = exp / exp_sum
+    loss += -np.log(norm_p[correct_class])
 
+    dW[:, correct_class] -= X[i]
     for j in range(num_classes):
-      if j != y[i]:
-          p = np.exp(norm[j])
-          dW[:, j] += p * X[i]
+      p = norm_p[j]
+      dW[:, j] += p * X[i]
+      
 
   # Right now the loss is a sum over all training examples, but we want it
   # to be an average instead so we divide by num_train.
   loss /= num_train
+  dW /= num_train
 
   # Add regularization to the loss.
   loss += 0.5 * reg * np.sum(W * W)
+  dW += reg*W
 
   #############################################################################
   #                          END OF YOUR CODE                                 #
@@ -80,19 +84,30 @@ def softmax_loss_vectorized(W, X, y, reg):
   num_classes = W.shape[1]
   num_train = X.shape[0]
   loss = 0.0
-  for i in xrange(num_train):
-    scores = X[i].dot(W)
-    exp = np.exp(scores)
-    norm = exp / exp.sum()
-    correct_class_score = norm[y[i]]
-    loss += -np.log(correct_class_score)
+  scores = X.dot(W)
+  scores_exp = np.exp(scores)
+  scores_exp_sum = np.sum(scores_exp, axis=1)
+  scores_p = scores_exp / scores_exp_sum[np.newaxis].T
+
+  # take correct scores and compute loss
+  scores_correct = scores_p[np.arange(len(scores_p)), y]
+  scores_loss = -np.log(scores_correct)
+  loss = np.sum(scores_loss)
+
+  # calculate dW by taking the correct score and subtracting 1
+  scores_dw = scores_p
+  scores_dw[np.arange(len(scores_dw)), y] -= 1
+  dW = X.T.dot(scores_dw)
 
   # Right now the loss is a sum over all training examples, but we want it
   # to be an average instead so we divide by num_train.
   loss /= num_train
+  dW /= num_train
 
   # Add regularization to the loss.
   loss += 0.5 * reg * np.sum(W * W)
+  dW += reg*W
+
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
