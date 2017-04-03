@@ -42,9 +42,10 @@ def softmax_loss_naive(W, X, y, reg):
     norm_p = exp / exp_sum
     loss += -np.log(norm_p[correct_class])
 
-    dW[:, correct_class] -= X[i]
     for j in range(num_classes):
       p = norm_p[j]
+      if j == correct_class:
+        p = p - 1
       dW[:, j] += p * X[i]
       
 
