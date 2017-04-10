@@ -70,11 +70,15 @@ class TwoLayerNet(object):
     # Compute the forward pass
     scores = None
     #############################################################################
-    # TODO: Perform the forward pass, computing the class scores for the input. #
+    # Perform the forward pass, computing the class scores for the input. #
     # Store the result in the scores variable, which should be an array of      #
     # shape (N, C).                                                             #
     #############################################################################
-    pass
+    fc1 = X.dot(W1) + b1
+    relu = np.abs((fc1 > 0) * fc1)
+    fc2 = relu.dot(W2) + b2
+    scores = fc2
+
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -86,13 +90,21 @@ class TwoLayerNet(object):
     # Compute the loss
     loss = None
     #############################################################################
-    # TODO: Finish the forward pass, and compute the loss. This should include  #
+    # Finish the forward pass, and compute the loss. This should include  #
     # both the data loss and L2 regularization for W1 and W2. Store the result  #
     # in the variable loss, which should be a scalar. Use the Softmax           #
     # classifier loss. So that your results match ours, multiply the            #
     # regularization loss by 0.5                                                #
     #############################################################################
-    pass
+    scores_exp = np.exp(scores)
+    scores_exp_sum = np.sum(scores_exp, axis=1)
+    scores_p = scores_exp / scores_exp_sum[np.newaxis].T
+    scores_correct = scores_p[np.arange(len(scores_p)), y]
+    scores_loss = -np.log(scores_correct)
+    loss = np.sum(scores_loss)
+    loss /= N
+    loss += 0.5 * reg * (np.sum(W1 * W1) + np.sum(W2 * W2))
+
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -104,7 +116,11 @@ class TwoLayerNet(object):
     # and biases. Store the results in the grads dictionary. For example,       #
     # grads['W1'] should store the gradient on W1, and be a matrix of same size #
     #############################################################################
-    pass
+    scores_dw = scores_p
+    scores_dw[np.arange(len(scores_dw)), y] -= 1
+    dW = relu.T.dot(scores_dw)
+    grads['W2'] = dW
+    print(dW.shape)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
