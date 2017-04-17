@@ -107,7 +107,7 @@ def softmax_loss_vectorized(W, X, y, reg):
 
   # Add regularization to the loss.
   loss += 0.5 * reg * np.sum(W * W)
-  dW += reg*W
+  dW += reg * W
 
   #############################################################################
   #                          END OF YOUR CODE                                 #
