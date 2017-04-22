@@ -33,9 +33,9 @@ class TwoLayerNet(object):
     - output_size: The number of classes C.
     """
     self.params = {}
-    self.params['W1'] = std * np.random.uniform(-1,1,input_size*hidden_size).reshape(input_size, hidden_size) #np.random.randn(input_size, hidden_size)
+    self.params['W1'] = std * np.random.uniform(-0.1,-0.1,input_size*hidden_size).reshape(input_size, hidden_size) #np.random.randn(input_size, hidden_size)
     self.params['b1'] = np.zeros(hidden_size)
-    self.params['W2'] = std * std * np.random.uniform(-1,1,hidden_size*output_size).reshape(hidden_size, output_size) #np.random.randn(hidden_size, output_size)
+    self.params['W2'] = std * std * np.random.uniform(-0.1,-0.1,hidden_size*output_size).reshape(hidden_size, output_size) #np.random.randn(hidden_size, output_size)
     self.params['b2'] = np.zeros(output_size)
 
   def loss(self, X, y=None, reg=0.0):
